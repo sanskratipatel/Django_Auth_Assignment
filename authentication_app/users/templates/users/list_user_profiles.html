@@ -1,0 +1,48 @@
+
+ <!-- users/templates/users/list_user_profiles.html -->
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profiles</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Profiles</h1>
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Address</th>
+            <th>Date Joined</th>
+            <th>Last Updated</th>
+        </tr>
+        {% for profile in user_profiles %}
+        <tr>
+            <td>{{ profile.user.username }}</td>
+            <td>{{ profile.user.email }}</td>
+            <td>{{ profile.phone_number }}</td>
+            <td>{{ profile.address }}</td>
+            <td>{{ profile.user.date_joined }}</td>
+            <td>{{ profile.last_updated }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    /* General reset */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    /* Centered container */
+    .login-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      text-align: center;
+    }
+
+    .login-container h1 {
+      margin-bottom: 20px;
+      color: #6e8efb;
+      font-size: 1.8em;
+    }
+
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-container .input-wrapper {
+      position: relative;
+    }
+
+    .login-container input {
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    .login-container .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.5em;
+      color: #6e8efb;
+    }
+
+    .login-container button {
+      background: #6e8efb;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .login-container button:hover {
+      background: #a777e3;
+    }
+
+    .login-container p {
+      margin: 10px 0;
+      font-size: 0.9em;
+    }
+
+    .login-container a {
+      color: #6e8efb;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .login-container a:hover {
+      color: #a777e3;
+    }
+
+    /* Social login buttons */
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .social-buttons img {
+      width: 35px;
+      height: 35px;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 15px;
+      font-size: 0.8em;
+      color: #999;
+    }
+  </style>
+  <script>
+    // Toggle password visibility
+    function togglePassword() {
+      const passwordField = document.getElementById('password');
+      const toggleIcon = document.getElementById('togglePassword');
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.textContent = '🙈'; // Change to "eye-off" emoji
+      } else {
+        passwordField.type = 'password';
+        toggleIcon.textContent = '👁️'; // Change to "eye" emoji
+      }
+    }
+
+    // Redirect to dashboard after login
+    function handleLogin(event) {
+      event.preventDefault(); // Prevent form submission for demo purposes
+      // In your actual implementation, validate the login on the server
+      window.location.href = '/dashboard'; // Redirect to dashboard page
+    }
+  </script>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login</h1>
+    <form method="post" onsubmit="handleLogin(event)">
+      {% csrf_token %}
+      <input id="username" name="username" type="text" placeholder="Username or Email" required>
+      <div class="input-wrapper">
+        <input id="password" name="password" type="password" placeholder="Password" required>
+        <span class="toggle-password" id="togglePassword" onclick="togglePassword()">👁️</span>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <div class="social-buttons">
+        <img src="https://img.icons8.com/ios-filled/50/000000/google-logo.png" alt="Google Logo">
+        <img src="https://img.icons8.com/ios-filled/50/000000/github.png" alt="GitHub Logo">
+      </div>
+    <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+    <p><a href="{% url 'forgot_password' %}">Forgot Password?</a></p>
+    <div class="footer">
+      <p>&copy; 2024 Authentication App. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

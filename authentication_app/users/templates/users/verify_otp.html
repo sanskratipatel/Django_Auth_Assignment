@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP</title>
+  <style>
+    /* Similar styling as the login page */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .verify-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      text-align: center;
+    }
+
+    .verify-container h1 {
+      margin-bottom: 20px;
+      color: #6e8efb;
+    }
+
+    .verify-container input {
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    .verify-container button {
+      background: #6e8efb;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.2em;
+      width: 100%;
+    }
+
+    .verify-container button:hover {
+      background: #a777e3;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: #999;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="verify-container">
+    <h1>Verify OTP</h1>
+    <form method="post">
+      {% csrf_token %}
+      <input id="otp" name="otp" type="text" placeholder="Enter OTP" required>
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+      <button type="submit">Verify OTP</button>
+    </form>
+    <div class="footer">
+      <p>&copy; 2024 Authentication App. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

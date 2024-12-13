@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    /* General reset */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      transition: background 0.3s ease;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode {
+      background: linear-gradient(135deg, #333, #444);
+      color: #fff;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+      transition: background 0.3s ease;
+    }
+
+    .container.dark-mode {
+      background: #222;
+    }
+
+    h1 {
+      color: #6e8efb;
+      font-size: 2em;
+    }
+
+    .container a {
+      display: block;
+      margin: 10px 0;
+      color: #6e8efb;
+      text-decoration: none;
+      font-size: 1.1em;
+      transition: color 0.3s ease;
+    }
+
+    .container a:hover {
+      color: #a777e3;
+    }
+
+    .container .button {
+      background: #6e8efb;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 1.2em;
+    }
+
+    .container .button:hover {
+      background: #a777e3;
+    }
+
+    /* Dark Mode Button */
+    .dark-mode-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #6e8efb;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .dark-mode-toggle:hover {
+      background: #a777e3;
+    }
+
+    /* Logout Button */
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .logout-btn:hover {
+      background: #ff6666;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #999;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+      }
+    }
+  </style>
+  <script>
+    // Toggle dark and light mode
+    function toggleDarkMode() {
+      const body = document.body;
+      const container = document.querySelector('.container');
+      const darkModeButton = document.querySelector('.dark-mode-toggle');
+
+      body.classList.toggle('dark-mode');
+      container.classList.toggle('dark-mode');
+
+      if (body.classList.contains('dark-mode')) {
+        darkModeButton.textContent = 'Light Mode';
+      } else {
+        darkModeButton.textContent = 'Dark Mode';
+      }
+    }
+
+    // Logout function
+    function logout() {
+      window.location.href = '{% url "login" %}';  // Redirect to the login page
+    }
+  </script>
+</head>
+<body>
+  <!-- Dark Mode Toggle Button -->
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">Dark Mode</button>
+
+  <!-- Logout Button -->
+  <button class="logout-btn" onclick="logout()">Logout</button>
+
+  <div class="container">
+    <h1>Welcome, {{ username }}!</h1>
+    <a href="{% url 'profile' %}">View Profile</a>
+    <a href="{% url 'change_password' %}">Change Password</a>
+    <button class="button" onclick="window.location.href='{{ dashboard_url }}'">Go to Dashboard</button>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2024 Authentication App. All rights reserved.</p>
+  </div>
+</body>
+</html>
