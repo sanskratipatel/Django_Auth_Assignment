@@ -1,3 +1,14 @@
+<!-- <form method="POST" action="{% url 'signup' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Sign Up</button>
+</form>
+
+{% if messages %}
+  {% for message in messages %}
+      <div class="alert">{{ message }}</div>
+  {% endfor %}
+{% endif %} --> 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,143 +107,118 @@
       color: #a777e3;
     }
 
-    /* Social login buttons - Horizontal Layout */
-    .social-buttons {
-      display: flex;
-      justify-content: center;
-      margin-top: 15px;
+    .error {
+      border: 2px solid red; /* Red border for invalid fields */
     }
 
-    .social-buttons img {
-      width: 40px;
-      height: 40px;
-      margin: 5px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .social-buttons img:hover {
-      transform: scale(1.1);
-    }
-
-    /* Footer */
-    .footer {
-      margin-top: 15px;
-      font-size: 0.8em;
-      color: #999;
-    }
-
-    /* Password Validation and Instructions */
-    .instructions {
-      font-size: 0.85em;
-      color: #555;
-      margin-top: 10px;
-      text-align: left;
-    }
-
-    .instructions ul {
-      padding-left: 20px;
-    }
-
-    .password-message {
+    .error-message {
       color: red;
       font-size: 0.9em;
     }
 
-    .password-strength {
-      font-size: 0.85em;
-      color: #28a745;
+    .success-message {
+      color: green;
+      font-size: 1.1em;
+      margin-top: 10px;
     }
   </style>
-  <script>
-    // Password visibility toggle function
-    function togglePasswordVisibility() {
-      const passwordField = document.getElementById("password");
-      const confirmPasswordField = document.getElementById("confirm_password");
-      const eyeIcon = document.getElementById("eye-icon");
-
-      if (passwordField.type === "password") {
-        passwordField.type = "text";
-        confirmPasswordField.type = "text";
-        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/visible.png"; // Change icon to 'visible'
-      } else {
-        passwordField.type = "password";
-        confirmPasswordField.type = "password";
-        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/invisible.png"; // Change icon to 'invisible'
-      }
-    }
-
-    // Validate password and password match
-    function validatePassword() {
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirm_password").value;
-      const passwordMessage = document.getElementById("password-message");
-      const passwordStrength = document.getElementById("password-strength");
-      const strengthRegex = {
-        lowercase: /[a-z]/,
-        uppercase: /[A-Z]/,
-        number: /[0-9]/,
-        specialChar: /[!@#$%^&*(),.?":{}|<>]/
-      };
-
-      // Password matching check
-      if (password !== confirmPassword) {
-        passwordMessage.textContent = "Passwords do not match!";
-      } else {
-        passwordMessage.textContent = "";
-      }
-
-      // Password strength check
-      if (password.length < 8) {
-        passwordStrength.textContent = "Password is too short. Must be at least 8 characters.";
-      } else if (!strengthRegex.lowercase.test(password) || !strengthRegex.uppercase.test(password) || !strengthRegex.number.test(password) || !strengthRegex.specialChar.test(password)) {
-        passwordStrength.textContent = "Password is weak. It should contain lowercase, uppercase, numbers, and special characters.";
-      } else {
-        passwordStrength.textContent = "Password strength: Strong";
-      }
-
-      // If everything is okay, allow submission
-      if (password === confirmPassword && password.length >= 8 && strengthRegex.lowercase.test(password) && strengthRegex.uppercase.test(password) && strengthRegex.number.test(password) && strengthRegex.specialChar.test(password)) {
-        // Redirect to login on successful signup
-        window.location.href = "/login/";
-      }
-    }
-  </script>
 </head>
 <body>
   <div class="signup-container">
     <h1>Sign Up</h1>
-    <form method="post" onsubmit="validatePassword(); return false;">
+    <form id="signup-form" method="post" action="{% url 'signup' %}" onsubmit="return validateForm()">
       {% csrf_token %}
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="email" name="email" placeholder="Email Address" required>
-      
+    
+      <!-- Username Input -->
+      <input type="text" name="username" placeholder="Username" 
+        class="{% if form.username.errors %}error{% endif %}" 
+        value="{{ form.username.value }}" required>
+      {% for error in form.username.errors %}
+        <p class="error-message">{{ error }}</p>
+      {% endfor %}
+    
+      <!-- Email Input -->
+      <input type="email" name="email" placeholder="Email Address" 
+        class="{% if form.email.errors %}error{% endif %}" 
+        value="{{ form.email.value }}" required>
+      {% for error in form.email.errors %}
+        <p class="error-message">{{ error }}</p>
+      {% endfor %}
+    
+      <!-- Password Input -->
       <div class="password-container">
-        <input type="password" id="password" name="password" placeholder="Password" required>
-        <img id="eye-icon" class="eye-icon" src="https://img.icons8.com/ios-filled/50/000000/invisible.png" onclick="togglePasswordVisibility()" alt="Eye Icon">
+        <input type="password" id="password" name="password" placeholder="Password" 
+          class="{% if form.password.errors %}error{% endif %}" required>
+        <img id="eye-icon-password" class="eye-icon" src="https://img.icons8.com/ios-filled/50/000000/invisible.png" 
+          onclick="togglePasswordVisibility('password')" alt="Eye Icon">
       </div>
-
+      {% for error in form.password.errors %}
+        <p class="error-message">{{ error }}</p>
+      {% endfor %}
+    
+      <!-- Confirm Password Input -->
       <div class="password-container">
-        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required oninput="validatePassword()">
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" 
+          class="{% if form.confirm_password.errors %}error{% endif %}" required oninput="validatePassword()">
+        <img id="eye-icon-confirm-password" class="eye-icon" src="https://img.icons8.com/ios-filled/50/000000/invisible.png" 
+          onclick="togglePasswordVisibility('confirm_password')" alt="Eye Icon">
       </div>
-
-      <p id="password-message" class="password-message"></p>
-      <p id="password-strength" class="password-strength"></p>
-      
+      {% for error in form.confirm_password.errors %}
+        <p class="error-message">{{ error }}</p>
+      {% endfor %}
+    
+      <!-- Success and error messages -->
+      <p id="password-message" class="error-message"></p>
+    
       <button type="submit">Sign Up</button>
     </form>
     
-    <!-- Social Media Buttons -->
-    <div class="social-buttons">
-      <img src="https://img.icons8.com/ios-filled/50/000000/google-logo.png" alt="Google Logo">
-      <img src="https://img.icons8.com/ios-filled/50/000000/github.png" alt="GitHub Logo">
-    </div>
-
     <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
-
-    <div class="footer">
-      <p>&copy; 2024 Sanskrati. All rights reserved.</p>
-    </div>
   </div>
+
+  <script>
+    // Toggle password visibility for both password fields
+    function togglePasswordVisibility(fieldId) {
+      const passwordField = document.getElementById(fieldId);
+      const eyeIcon = document.getElementById('eye-icon-' + fieldId);
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/visible.png"; // Change icon to 'visible'
+      } else {
+        passwordField.type = "password";
+        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/invisible.png"; // Change icon to 'invisible'
+      }
+    }
+
+    // Validate password match and strength
+    function validatePassword() {
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm_password").value;
+      const passwordMessage = document.getElementById("password-message");
+
+      // Check if passwords match
+      if (password !== confirmPassword) {
+        passwordMessage.textContent = "Passwords do not match!";
+        return false;
+      } else {
+        passwordMessage.textContent = "";
+        return true;
+      }
+    }
+
+    // Form validation before submission
+    function validateForm() {
+      const isPasswordValid = validatePassword();
+      if (isPasswordValid) {
+        // Redirect to the login page after form submission
+        setTimeout(function() {
+          window.location.href = "{% url 'login' %}";
+        }, 1000); // Optional delay of 1 second before redirect
+        return true; // Allow form submission
+      } else {
+        return false; // Prevent form submission if passwords do not match
+      }
+    }
+  </script>
 </body>
 </html>

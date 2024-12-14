@@ -13,3 +13,20 @@ class UserProfile(models.Model):
     # date_joined = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.user.username
+
+from django.contrib.auth.models import User
+from django.db import migrations, models
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('auth', '0012_auto_20210101_0000'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='user',
+            name='email',
+            field=models.EmailField(unique=True, max_length=254),
+        ),
+    ]

@@ -71,16 +71,22 @@ def verify_otp(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib import messages
+
 def reset_password_view(request):
     if request.method == 'POST':
+        # Step 1: Get form data
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
-        email = request.session.get('email')  # Assuming you stored the email in the session after OTP verification
+        email = request.session.get('email')  # Ensure email was stored in session earlier
 
         try:
+            # Step 2: Fetch the user by unique email
             user = User.objects.get(email=email)
 
-            # Check if the new password matches the old password
+            # Step 3: Validate new password
             if user.check_password(new_password):
                 messages.error(request, "New password cannot be the same as the old password.")
                 return render(request, 'users/reset_password.html', {'error': 'New password cannot be the same as the old password.'})
@@ -89,17 +95,25 @@ def reset_password_view(request):
                 messages.error(request, "Passwords do not match.")
                 return render(request, 'users/reset_password.html', {'error': 'Passwords do not match.'})
 
-            # Set the new password
+            # Step 4: Update password
             user.set_password(new_password)
             user.save()
-            messages.success(request, "Password has been reset successfully.")
-            return redirect('login')  # Redirect to the login page after successful password reset
+
+            # Step 5: Redirect to login page
+            messages.success(request, "Password has been reset successfully. Please log in.")
+            return redirect('login')
 
         except User.DoesNotExist:
-            messages.error(request, "User  not found.")
-            return render(request, 'users/reset_password.html', {'error': 'User  not found.'})
+            # Handle case where user doesn't exist
+            messages.error(request, "No account found with this email.")
+            return render(request, 'users/reset_password.html', {'error': 'No account found with this email.'})
 
-    return render(request, 'users/reset_password.html') 
+        except User.MultipleObjectsReturned:
+            # Handle case where duplicate accounts exist
+            messages.error(request, "Multiple accounts found with this email. Please contact support.")
+            return render(request, 'users/reset_password.html', {'error': 'Multiple accounts found with this email.'})
+
+    return render(request, 'users/reset_password.html')
 
 
 class CustomPasswordChangeView(auth_views.PasswordChangeView):
@@ -107,47 +121,72 @@ class CustomPasswordChangeView(auth_views.PasswordChangeView):
     success_url = reverse_lazy('login') 
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from .forms import SignUpForm
+from django.contrib.auth import login
+from django.utils import timezone
+from django.contrib import messages
+from .models import UserProfile
+
 def signup_view(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()  # Saves the User instance
-            UserProfile.objects.create(user=user)  # Create the UserProfile instance
-            login(request, user)  # Log the user in
-            return redirect('dashboard')
-    else:
-        form = SignUpForm()
-    return render(request, 'users/signup.html', {'form': form})
+        email = request.POST.get('email')
 
+        # Check if the email already exists
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already exists. Please log in.")
+            return render(request, 'users/signup.html', {'form': form})
+        
+        # Validate the form
+        if not form.is_valid():
+            print(form.errors)  # This will print the form validation errors to the terminal
+            return render(request, 'users/signup.html', {'form': form})
+        
+        if form.is_valid():
+            user = form.save(commit=False)  # Create a user instance but don't save it yet
+            user.set_password(form.cleaned_data['password'])  # Hash the password
+            user.date_joined = timezone.now()  # Set the date joined
+            user.save()  # Save the user instance to the database
+            
+            # Create a UserProfile instance
+            UserProfile.objects.create(user=user)  # Create a profile for the user
+            
+            login(request, user)  # Log the user in
+            messages.success(request, "Signup successful. Redirecting to login.")
+            return redirect('login')  # Redirect to the login page
+    else:
+        form = SignUpForm()  # Create a new form instance for GET requests
+    
+    return render(request, 'users/signup.html', {'form': form})  # Render the signup page
+
+
+from django.contrib.auth.models import User
+from django.shortcuts import render
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-        else:
-            return render(request, 'users/login.html', {'error': 'Invalid username or password'})
+        email = request.POST.get('username')  # Get email input
+        password = request.POST.get('password')  # Get password input
+
+        try:
+            # Find the user by email
+            user = User.objects.get(email=email)
+            if user.check_password(password):  # Check if the password is correct
+                # Password is correct
+                login(request, user)
+                return redirect('dashboard')  # Redirect to dashboard
+            else:
+                # Incorrect password
+                return render(request, 'users/login.html', {'error': 'Incorrect password'})
+        except User.DoesNotExist:
+            # If the user with the given email doesn't exist
+            return render(request, 'users/login.html', {'error': 'Email does not exist. Please sign up.'})
+
     return render(request, 'users/login.html')
 
 
-
-# @login_required
-# def dashboard_view(request):
-#     return render(request, 'users/dashboard.html', {'username': request.user.username})
-
-# @login_required
-# def dashboard_view(request):
-#     profile = request.user.userprofile
-#     context = {
-#         'username': request.user.username,
-#         'email': request.user.email,
-#         'date_joined': profile.date_joined,
-#         'last_updated': profile.last_updated,
-#     }
-#     return render(request, 'users/dashboard.html', context)
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -176,16 +215,6 @@ def profile_view(request):
     user = UserProfile.objects.all()  # Adjust the query as needed
     return render(request, 'users/profile.html', {'user_profiles': user})
 
-
-
-# def profile_complete_required(view_func):
-#     def wrapper(request, *args, **kwargs):
-#         try:
-#             profile = request.user.userprofile
-#         except UserProfile.DoesNotExist:
-#             return redirect('complete_profile')  # Redirect to a page to complete profile
-#         return view_func(request, *args, **kwargs)
-#     return wrapper
 
 from django.shortcuts import render, redirect
 from .forms import CompleteProfileForm
