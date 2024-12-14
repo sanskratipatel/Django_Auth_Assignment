@@ -129,38 +129,28 @@ from django.utils import timezone
 from django.contrib import messages
 from .models import UserProfile
 
-def signup_view(request):
+
+def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
-        email = request.POST.get('email')
-
-        # Check if the email already exists
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists. Please log in.")
-            return render(request, 'users/signup.html', {'form': form})
-        
-        # Validate the form
-        if not form.is_valid():
-            print(form.errors)  # This will print the form validation errors to the terminal
-            return render(request, 'users/signup.html', {'form': form})
-        
         if form.is_valid():
-            user = form.save(commit=False)  # Create a user instance but don't save it yet
-            user.set_password(form.cleaned_data['password'])  # Hash the password
-            user.date_joined = timezone.now()  # Set the date joined
-            user.save()  # Save the user instance to the database
-            
-            # Create a UserProfile instance
-            UserProfile.objects.create(user=user)  # Create a profile for the user
-            
-            login(request, user)  # Log the user in
-            messages.success(request, "Signup successful. Redirecting to login.")
-            return redirect('login')  # Redirect to the login page
-    else:
-        form = SignUpForm()  # Create a new form instance for GET requests
-    
-    return render(request, 'users/signup.html', {'form': form})  # Render the signup page
+            email = form.cleaned_data['email']
 
+            # Check if user already exists
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "Email already exists. Please log in.")
+                return render(request, 'users/signup.html', {'form': form, 'error': 'User already exists. Please log in.'})
+
+            # If user doesn't exist, create the user
+            form.save()
+            messages.success(request, "Successfully signed up! Redirecting to login...")
+            return redirect('login')  # Redirect to login page after successful signup
+        else:
+            messages.error(request, "There was an error with your form. Please check and try again.")
+    else:
+        form = SignUpForm()
+
+    return render(request, 'users/signup.html', {'form': form})
 
 from django.contrib.auth.models import User
 from django.shortcuts import render

@@ -8,7 +8,7 @@
   {% for message in messages %}
       <div class="alert">{{ message }}</div>
   {% endfor %}
-{% endif %} --> 
+{% endif %}  -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,8 +107,28 @@
       color: #a777e3;
     }
 
-    .error {
-      border: 2px solid red; /* Red border for invalid fields */
+    .success-message {
+      color: green;
+      font-size: 1.1em;
+      margin-top: 10px;
+    }
+
+    .social-buttons img {
+      width: 40px;
+      height: 40px;
+      margin: 5px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .social-buttons img:hover {
+      transform: scale(1.1);
+    }
+
+    .footer {
+      margin-top: 15px;
+      font-size: 0.8em;
+      color: #999;
     }
 
     .error-message {
@@ -116,107 +136,52 @@
       font-size: 0.9em;
     }
 
-    .success-message {
-      color: green;
-      font-size: 1.1em;
-      margin-top: 10px;
-    }
   </style>
 </head>
 <body>
   <div class="signup-container">
     <h1>Sign Up</h1>
-    <form id="signup-form" method="post" action="{% url 'signup' %}" onsubmit="return validateForm()">
+    <form id="signup-form" method="post">
       {% csrf_token %}
-    
-      <!-- Username Input -->
-      <input type="text" name="username" placeholder="Username" 
-        class="{% if form.username.errors %}error{% endif %}" 
-        value="{{ form.username.value }}" required>
-      {% for error in form.username.errors %}
+      {{ form.as_p }}
+
+      {% if error %}
         <p class="error-message">{{ error }}</p>
-      {% endfor %}
-    
-      <!-- Email Input -->
-      <input type="email" name="email" placeholder="Email Address" 
-        class="{% if form.email.errors %}error{% endif %}" 
-        value="{{ form.email.value }}" required>
-      {% for error in form.email.errors %}
-        <p class="error-message">{{ error }}</p>
-      {% endfor %}
-    
-      <!-- Password Input -->
-      <div class="password-container">
-        <input type="password" id="password" name="password" placeholder="Password" 
-          class="{% if form.password.errors %}error{% endif %}" required>
-        <img id="eye-icon-password" class="eye-icon" src="https://img.icons8.com/ios-filled/50/000000/invisible.png" 
-          onclick="togglePasswordVisibility('password')" alt="Eye Icon">
-      </div>
-      {% for error in form.password.errors %}
-        <p class="error-message">{{ error }}</p>
-      {% endfor %}
-    
-      <!-- Confirm Password Input -->
-      <div class="password-container">
-        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" 
-          class="{% if form.confirm_password.errors %}error{% endif %}" required oninput="validatePassword()">
-        <img id="eye-icon-confirm-password" class="eye-icon" src="https://img.icons8.com/ios-filled/50/000000/invisible.png" 
-          onclick="togglePasswordVisibility('confirm_password')" alt="Eye Icon">
-      </div>
-      {% for error in form.confirm_password.errors %}
-        <p class="error-message">{{ error }}</p>
-      {% endfor %}
-    
-      <!-- Success and error messages -->
-      <p id="password-message" class="error-message"></p>
-    
+      {% endif %}
+
       <button type="submit">Sign Up</button>
+
+      <!-- Success Message -->
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li class="success-message">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </form>
+
+    <!-- Password visibility toggle function -->
+    <!-- <div class="password-container">
+      <input type="password" id="password" name="password">
+      <img id="eye-icon-password" class="eye-icon" src="https://img.icons8.com/ios-filled/50/000000/invisible.png" alt="Eye Icon" onclick="togglePasswordVisibility('password')">
+    </div> -->
+
+    <!-- Add your social media buttons and footer here as before -->
     
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
   </div>
 
   <script>
-    // Toggle password visibility for both password fields
+    // Password visibility toggle function
     function togglePasswordVisibility(fieldId) {
       const passwordField = document.getElementById(fieldId);
       const eyeIcon = document.getElementById('eye-icon-' + fieldId);
       if (passwordField.type === "password") {
         passwordField.type = "text";
-        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/visible.png"; // Change icon to 'visible'
+        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/visible.png";
       } else {
         passwordField.type = "password";
-        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/invisible.png"; // Change icon to 'invisible'
-      }
-    }
-
-    // Validate password match and strength
-    function validatePassword() {
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirm_password").value;
-      const passwordMessage = document.getElementById("password-message");
-
-      // Check if passwords match
-      if (password !== confirmPassword) {
-        passwordMessage.textContent = "Passwords do not match!";
-        return false;
-      } else {
-        passwordMessage.textContent = "";
-        return true;
-      }
-    }
-
-    // Form validation before submission
-    function validateForm() {
-      const isPasswordValid = validatePassword();
-      if (isPasswordValid) {
-        // Redirect to the login page after form submission
-        setTimeout(function() {
-          window.location.href = "{% url 'login' %}";
-        }, 1000); // Optional delay of 1 second before redirect
-        return true; // Allow form submission
-      } else {
-        return false; // Prevent form submission if passwords do not match
+        eyeIcon.src = "https://img.icons8.com/ios-filled/50/000000/invisible.png";
       }
     }
   </script>

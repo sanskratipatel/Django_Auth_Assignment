@@ -38,7 +38,7 @@ urlpatterns = [
     # Authentication routes
     path('login/', views.login_view, name='login'),  # Custom login view
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),  # Logout redirect to login
-    path('signup/', views.signup_view, name='signup'),
+    path('signup/', views.signup, name='signup'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('reset-password/', views.reset_password_view, name='reset_password'),
