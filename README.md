@@ -23,7 +23,7 @@ This Django application provides user authentication features, including login, 
 django_auth_system/
 ├── manage.py
 ├── db.sqlite3
-├── authentication/
+├── users/
 │   ├── migrations/
 │   ├── __init__.py
 │   ├── admin.py
@@ -32,7 +32,7 @@ django_auth_system/
 │   ├── views.py
 │   ├── urls.py
 └── templates/
-    └── authentication/
+    └── user/
         ├── login.html
         ├── signup.html
         ├── forgot_password.html
@@ -59,15 +59,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-email-password'
+EMAIL_HOST_USER = 'Null'
+EMAIL_HOST_PASSWORD = 'Null'
 ```
 
 ## Running the Project
 
 1. Clone the repository:
    ```bash
-   git clone <>
+   git clone <https://github.com/sanskratipatel/Django_Auth_Assignment.git>
    cd django_auth_system
    ```
 
@@ -92,4 +92,4 @@ Watch the video demonstrating the features of the application [here](https://www
 This project is open-source and available under the MIT License.
 ```
 
-This version of the README is more concise but still provides all necessary information about the functionality, setup, and configuration of the Django authentication system, along with the video link for demonstration.
+
