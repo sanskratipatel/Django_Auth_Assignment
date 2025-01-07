@@ -1,7 +1,4 @@
-# Django_Auth_Assignment
-Here’s a more concise version of the `README.md` with the provided video link included:
 
-```markdown
 # Django Authentication System
 
 ## Overview
