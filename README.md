@@ -1,4 +1,3 @@
-
 # Django Authentication System
 
 ## Overview
